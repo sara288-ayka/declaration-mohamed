@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Une déclaration pour Mohamed</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#ff5c7c;--muted:#9aa7bf}
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+      background: radial-gradient(circle at 10% 10%, #0b1220 0%, #071024 40%, #001 100%);
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color:#e6eef8;padding:24px
+    }
+    .card{
+      width:100%;max-width:860px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.15));
+      border-radius:18px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.04);
+      position:relative;overflow:hidden
+    }
+    header{display:flex;align-items:center;gap:18px}
+    .avatar{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#ff9ab3);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;color:#071122;border:6px solid rgba(255,255,255,0.06)}
+    h1{margin:0;font-size:22px}
+    p.lead{color:var(--muted);margin:6px 0 18px}
+    .message{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);min-height:140px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:18px}
+    .heart{display:inline-block;margin-left:8px;color:var(--accent);transform-origin:center;animation:pulse 1.4s infinite}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+    .controls{display:flex;gap:10px;justify-content:center;margin-top:16px}
+    button{background:linear-gradient(90deg,var(--accent),#ff7fa0);border:none;padding:10px 14px;border-radius:10px;color:#071122;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(255,92,124,0.12)}
+    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* falling hearts */
+    .hearts{pointer-events:none;position:absolute;inset:0;overflow:hidden}
+    .heart-bubble{position:absolute;font-size:20px;opacity:0.95;animation:floatUp linear forwards}
+    @keyframes floatUp{from{transform:translateY(100vh) scale(0.6);opacity:1}to{transform:translateY(-10vh) scale(1.3);opacity:0}}
+
+    /* small responsive tweaks */
+    @media (max-width:520px){.avatar{width:64px;height:64px;font-size:22px}.message{font-size:16px}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="hearts" id="hearts"></div>
+    <header>
+      <div class="avatar">M</div>
+      <div>
+        <h1>Pour Mohamed — une petite déclaration</h1>
+        <p class="lead">Clique sur "Montrer" pour révéler le message.</p>
+      </div>
+    </header>
+
+    <main>
+      <div class="message" id="message">
+        <div id="hiddenText">Clique sur <strong>Montrer</strong> pour lire ta déclaration...</div>
+      </div>
+
+      <div class="controls">
+        <button id="revealBtn">Montrer</button>
+        <button class="secondary" id="editBtn">Modifier le texte</button>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;">
+        <small style="color:var(--muted)">Prévisualisation mobile et bureau • Aucun serveur requis — enregistrez ce fichier et ouvrez-le dans votre navigateur.</small>
+      </div>
+
+      <footer>
+        <div id="signature">Avec tout mon amour ❤️</div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // Le texte de la déclaration — personnalise ici
+    const declaration = `Mohamed,
+
+Depuis le premier jour où nos chemins se sont croisés, tu as illuminé mes journées.
+Ta douceur, ton rire et ta présence rendent tout plus beau. Je veux être à tes côtés, partager tes joies et te soutenir dans les moments plus durs.
+
+Je t'aime plus que les mots ne peuvent le dire.`.replace(/\n/g,'<br>');
+
+    const messageEl = document.getElementById('message');
+    const hiddenText = document.getElementById('hiddenText');
+    const revealBtn = document.getElementById('revealBtn');
+    const editBtn = document.getElementById('editBtn');
+
+    let shown = false;
+    revealBtn.addEventListener('click', ()=>{
+      if(!shown){
+        hiddenText.innerHTML = `<div style="font-size:18px;line-height:1.6">${declaration} <span class="heart">❤</span></div>`;
+        revealBtn.textContent = 'Cacher';
+        startHearts(16);
+      } else {
+        hiddenText.textContent = 'Clique sur Montrer pour lire ta déclaration...';
+        revealBtn.textContent = 'Montrer';
+      }
+      shown = !shown;
+    });
+
+    editBtn.addEventListener('click', ()=>{
+      const newText = prompt('Écris ton message pour Mohamed :', declaration.replace(/<br>/g,'\n'));
+      if(newText !== null){
+        // mettre à jour le texte de déclaration
+        const safe = newText.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+        // remplace la variable declaration visuellement
+        // (dans un vrai projet on sauvegarderait côté serveur ou localStorage)
+        hiddenText.innerHTML = `<div style="font-size:18px;line-height:1.6">${safe} <span class="heart">❤</span></div>`;
+        revealBtn.textContent = 'Cacher';
+        shown = true;
+        startHearts(20);
+      }
+    });
+
+    // animation de cœurs qui tombent
+    function startHearts(count=12){
+      const container = document.getElementById('hearts');
+      container.innerHTML = '';
+      for(let i=0;i<count;i++){
+        const span = document.createElement('div');
+        span.className = 'heart-bubble';
+        const size = 12 + Math.random()*28; // px
+        span.style.fontSize = size + 'px';
+        span.style.left = (Math.random()*100) + '%';
+        span.style.animationDuration = (4 + Math.random()*5) + 's';
+        span.style.opacity = (0.6 + Math.random()*0.4).toFixed(2);
+        span.style.transform = `translateY(0) rotate(${Math.random()*40-20}deg)`;
+        span.innerHTML = '❤';
+        container.appendChild(span);
+
+        // remove after animation
+        setTimeout(()=>{ if(span.parentNode) span.parentNode.removeChild(span); }, 12000);
+      }
+    }
+
+    // Small UX: allow Enter key to reveal when focused
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') revealBtn.click(); });
+  </script>
+</body>
+</html>
